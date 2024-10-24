@@ -13,4 +13,8 @@
   <ItemGroup>
     <!-- <PackageReference Include="EventStorage" Version="0.0.0-alpha.5" /> -->
   </ItemGroup>
+
+  <ItemGroup>
+    <!-- <PackageReference Include="Redis.OM" Version="0.7.5" /> -->
+  </ItemGroup>
 </Project>

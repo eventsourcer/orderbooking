@@ -4,7 +4,7 @@ using EventStorage.Projections;
 using EventStorage.Repositories;
 using OrderBooking;
 using OrderBooking.Commands;
-using OrderBooking.Models;
+using OrderBooking.Projections;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connectionString = builder.Configuration["postgresqlsecret"]??
+var connectionString = builder.Configuration["mssqlsecret"]??
     throw new Exception("No connection defined");
 
 builder.Services.AddEventStorage(eventstorage =>
@@ -22,8 +22,9 @@ builder.Services.AddEventStorage(eventstorage =>
     
     eventstorage.AddEventSource(eventsource =>
     {
-        eventsource.SelectEventStorage(EventStore.PostgresSql, connectionString)
-        .Project<OrderProjection>(ProjectionMode.Runtime);
+        eventsource.Select(EventStore.SqlServer, connectionString)
+        .Project<OrderProjection>(ProjectionMode.Async, dest => dest.Redis("redis://localhost:6379"))
+        .Project<OrderDetailProjection>(ProjectionMode.Async, dest => dest.Redis("redis://localhost:6379"));
     });
 });
 
@@ -57,12 +58,6 @@ async(IEventStorage<OrderBookingAggregate> eventSource, string orderId, ConfirmO
     await eventSource.Commit(aggregate);
 });
 
-app.MapGet("api/getorder/{orderId}",
-async(IEventStorage<OrderBookingAggregate> eventStorage, string orderId) =>
-{
-    var order = await eventStorage.Project<OrderProjection>(orderId);
-    return Results.Ok(order);
-});
 app.MapGet("api/getorder/{orderId}",
 async(IEventStorage<OrderBookingAggregate> eventStorage, string orderId) =>
 {
