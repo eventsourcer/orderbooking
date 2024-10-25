@@ -1,7 +1,7 @@
 using EventStorage.Projections;
 using OrderBooking.Projections;
 
-public class RedisProjection : Projection<RedisModel>
+public class OrderDocumentProjection : Projection<OrderDocument>
 {
     
 }

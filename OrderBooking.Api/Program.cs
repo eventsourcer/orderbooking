@@ -13,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connectionString = builder.Configuration["mssqlsecret"]??
+var connectionString = builder.Configuration["postgresqlsecret"]??
     throw new Exception("No connection defined");
 
 builder.Services.AddEventStorage(eventstorage =>
@@ -22,9 +22,9 @@ builder.Services.AddEventStorage(eventstorage =>
     
     eventstorage.AddEventSource(eventsource =>
     {
-        eventsource.Select(EventStore.SqlServer, connectionString)
-        .Project<OrderProjection>(ProjectionMode.Async, dest => dest.Redis("redis://localhost:6379"))
-        .Project<OrderDetailProjection>(ProjectionMode.Async, dest => dest.Redis("redis://localhost:6379"));
+        eventsource.Select(EventStore.PostgresSql, connectionString)
+        .Project<OrderProjection>(ProjectionMode.Consistent)
+        .Project<OrderDocumentProjection>(ProjectionMode.Async, dest => dest.Redis("redis://localhost:6379"));
     });
 });
 
