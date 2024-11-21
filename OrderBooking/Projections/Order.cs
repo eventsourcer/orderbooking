@@ -10,7 +10,7 @@ public record OrderDetail(string SourceId, OrderStatus Status, long Version);
 public class OrderDocument
 {
     [RedisIdField][Indexed]
-    public string SourceId { get; set; } = string.Empty;
+    public string? SourceId { get; set; } = string.Empty;
     [Searchable]
     public OrderStatus Status { get; set; }
     public long Version { get; set; }

@@ -8,10 +8,6 @@ namespace OrderBooking;
 public class OrderBookingAggregate : EventSource<long>
 {
     public OrderStatus OrderStatus { get; private set; }
-    protected override void Apply(SourcedEvent e)
-    {
-        this.InvokeApply(e);
-    }
     public void Apply(OrderPlaced e)
     {
         OrderStatus = OrderStatus.Placed;
@@ -35,6 +31,5 @@ public class OrderBookingAggregate : EventSource<long>
         if( OrderStatus == OrderStatus.Confirmed)
             return;
         RaiseEvent(new OrderConfirmed());
-        RaiseEvent(new OrderRedied());
     }
 }
