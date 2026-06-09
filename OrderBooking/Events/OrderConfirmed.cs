@@ -2,4 +2,7 @@ using EventStorage.Events;
 
 namespace OrderBooking.Events;
 
-public record OrderConfirmed() : SourcedEvent;
+public record OrderConfirmed : SourcedEvent
+{
+    
+}
